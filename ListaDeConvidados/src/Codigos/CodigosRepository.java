@@ -54,6 +54,23 @@ public class CodigosRepository {
 
         }
 
+        public boolean marcarComoValidado(String codigo, int usuarioId) {
+            String sql = "UPDATE codigos SET usuario_id = ?, validado = true WHERE codigo = ? AND validado = false";
+
+            try(PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setInt(1, usuarioId);
+                stmt.setString(2, codigo);
+
+                int linhasAfetadas = stmt.executeUpdate();
+                return linhasAfetadas > 0;
+
+            }catch (SQLException ex) {
+                System.out.println("Erro ao validar codigo");
+                ex.printStackTrace();
+                return false;
+            }
+        }
+
 
 
 

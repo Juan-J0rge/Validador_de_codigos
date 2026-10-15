@@ -1,19 +1,16 @@
 package Validacao;
 
-import Codigos.CodigosGerados;
+import Codigos.CodigosRepository;
 import Codigos.RegraDeCodigo;
 import Exceptions.CodigoInvalidoException;
-import Exceptions.ListaCheiaException;
-import Usuarios.BancoDeUsuarios;
-import Usuarios.ListaDeUsuarioValidos;
-import Usuarios.Usuario;
+import Exceptions.UsuarioInvalidoException;
+import Usuarios.UsuarioRepository;
 
 public class Validacao {
 
     RegraDeCodigo regra = new RegraDeCodigo();
-    BancoDeUsuarios bancoUsuario = new BancoDeUsuarios();
-    CodigosGerados codigos = new CodigosGerados();
-    ListaDeUsuarioValidos usuarioValido = new ListaDeUsuarioValidos();
+    CodigosRepository codigosRepository = new CodigosRepository();
+    UsuarioRepository usuarioRepository = new UsuarioRepository();
 
     public void validarCadastro(String nome, int idade, String codigo) {
 
@@ -21,17 +18,24 @@ public class Validacao {
             throw new CodigoInvalidoException("A formatação do seu código esta errada!");
         }
 
-        if (!codigos.codigoExiste(codigo)) {
-            throw new CodigoInvalidoException("O seu codigo não existe!");
+        if (!codigosRepository.existeDisponivel(codigo)) {
+            throw new CodigoInvalidoException("Seu codigo não existe ou ja foi usado!");
         }
 
-        if (!usuarioValido.limiteDaLista()) {
-            throw new ListaCheiaException("A lista do casamento ja está cheia! Confirme com o noivo(a).");
+        int usuarioId = usuarioRepository.salvar(nome, idade);
+
+        if (usuarioId == -1) {
+            throw new UsuarioInvalidoException("Erro ao salvar usuario!");
+        }
+
+        boolean validado = codigosRepository.marcarComoValidado(codigo, usuarioId);
+
+        if (!validado) {
+            throw new CodigoInvalidoException("Erro ao validar codigo!");
         }
 
 
-            Usuario usuario = bancoUsuario.cadastrar(nome, idade, codigo);
-            usuarioValido.adicionarUsuarioValido(codigo, usuario);
+
     }
 
 }
