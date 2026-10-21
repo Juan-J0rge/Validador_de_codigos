@@ -1,17 +1,18 @@
 import Codigos.CodigosGerados;
 import Codigos.CodigosRepository;
 import Conexao.Conexao;
+import Exceptions.CodigoInvalidoException;
 import Usuarios.UsuarioRepository;
 import Validacao.Validacao;
 
 import java.sql.Connection;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
-        CodigosRepository codigosRepository = new CodigosRepository();
-        UsuarioRepository usuarioRepository = new UsuarioRepository();
+        Scanner scanner = new Scanner(System.in);
         Validacao validacao = new Validacao();
+
         try {
             Connection connection = Conexao.getIntancia().connection();
             System.out.println("Banco Conectado\n**************");
@@ -21,17 +22,23 @@ public class Main {
         }
 
 
-        boolean resultado = codigosRepository.existeDisponivel( "AC-2907");
-        System.out.println("Existente = " + resultado);
-
-        int id = usuarioRepository.salvar("Teste3", 15);
-        System.out.println("ID gerado: " + id);
-
-        boolean ok = codigosRepository.marcarComoValidado("AC-2907", 2);
-        System.out.println(ok);
 
 
-        validacao.validarCadastro("Juan", 21, "QY-3579");
+        System.out.println("Nome completo:");
+        String nome = scanner.nextLine();
+
+        System.out.println("Idade:");
+        int idade = Integer.parseInt(scanner.nextLine());
+
+        System.out.println("Codigo do convite:");
+        String codigo = scanner.nextLine();
+
+        try {
+            validacao.validarCadastro(nome,idade,codigo);
+            System.out.println("Acesso liberado");
+        } catch (CodigoInvalidoException e) {
+            System.out.println("Acesso negado: " + e.getMessage());
+        }
 
     }
 }
