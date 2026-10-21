@@ -23,22 +23,32 @@ public class Main {
 
 
 
+        while (true) {
+            System.out.println("Digite nome completo: (ou digite 'sair' se quiser encerrar)");
+            String nome = scanner.nextLine();
 
-        System.out.println("Nome completo:");
-        String nome = scanner.nextLine();
+            if (nome.equalsIgnoreCase("sair")) {
+                break;
+            }
 
-        System.out.println("Idade:");
-        int idade = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("Codigo do convite:");
-        String codigo = scanner.nextLine();
+            try {
+                System.out.println("Idade:");
+                int idade = Integer.parseInt(scanner.nextLine());
 
-        try {
-            validacao.validarCadastro(nome,idade,codigo);
-            System.out.println("Acesso liberado");
-        } catch (CodigoInvalidoException e) {
-            System.out.println("Acesso negado: " + e.getMessage());
+                System.out.println("Codigo do convite:");
+                String codigo = scanner.nextLine();
+
+                validacao.validarCadastro(nome,idade,codigo);
+                System.out.println("Acesso liberado");
+            } catch (CodigoInvalidoException e) {
+                System.out.println("Acesso negado: " + e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("Idade invalida!. Digite apenas numeros");
+            }
+            System.out.println();
         }
+        System.out.println("Programa encerrado");
 
     }
 }
