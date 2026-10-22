@@ -2,6 +2,7 @@ import Codigos.CodigosGerados;
 import Codigos.CodigosRepository;
 import Conexao.Conexao;
 import Exceptions.CodigoInvalidoException;
+import Exceptions.DadosInvalidosException;
 import Usuarios.UsuarioRepository;
 import Validacao.Validacao;
 
@@ -45,6 +46,8 @@ public class Main {
                 System.out.println("Acesso negado: " + e.getMessage());
             } catch (NumberFormatException e) {
                 System.out.println("Idade invalida!. Digite apenas numeros");
+            }catch (DadosInvalidosException e) {
+                System.out.println("Dados do usuario invalidos: " + e.getMessage());
             }
             System.out.println();
         }

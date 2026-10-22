@@ -20,7 +20,8 @@ public class Conexao {
 
     private Conexao()  {
         try {
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/codigos","postgres","123456");
+            String senha = System.getenv("DB_SENHA");
+            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/codigos","postgres",senha);
         } catch (SQLException ex) {
             throw new RuntimeException("Ocorreu um erro ao se conectar no banco de dados");
         }

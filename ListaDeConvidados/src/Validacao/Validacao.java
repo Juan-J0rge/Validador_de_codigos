@@ -3,8 +3,11 @@ package Validacao;
 import Codigos.CodigosRepository;
 import Codigos.RegraDeCodigo;
 import Exceptions.CodigoInvalidoException;
+import Exceptions.DadosInvalidosException;
 import Exceptions.UsuarioInvalidoException;
 import Usuarios.UsuarioRepository;
+
+import java.sql.Connection;
 
 public class Validacao {
 
@@ -13,6 +16,15 @@ public class Validacao {
     UsuarioRepository usuarioRepository = new UsuarioRepository();
 
     public void validarCadastro(String nome, int idade, String codigo) {
+
+        if(nome == null || nome.trim().isEmpty()) {
+            throw new DadosInvalidosException("Nome do usuario invalido! (O nome não pode ser vazio!)");
+        }
+
+        if (idade < 0 || idade > 120) {
+            throw new DadosInvalidosException("Idade do usuario invalida");
+        }
+
 
         if (!regra.formatacaoDosCodigos(codigo)) {
             throw new CodigoInvalidoException("A formatação do seu código esta errada!");
@@ -33,7 +45,6 @@ public class Validacao {
         if (!validado) {
             throw new CodigoInvalidoException("Erro ao validar codigo!");
         }
-
 
 
     }
