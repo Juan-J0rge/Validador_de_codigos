@@ -46,12 +46,16 @@ public class Main {
                 System.out.println("Acesso negado: " + e.getMessage());
             } catch (NumberFormatException e) {
                 System.out.println("Idade invalida!. Digite apenas numeros");
+
             }catch (DadosInvalidosException e) {
                 System.out.println("Dados do usuario invalidos: " + e.getMessage());
+
+            }finally {
+                System.out.println("\n*** Programa encerrado ***");
             }
-            System.out.println();
+
         }
-        System.out.println("Programa encerrado");
+
 
     }
 }

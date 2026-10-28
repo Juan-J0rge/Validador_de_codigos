@@ -2,12 +2,14 @@ package Validacao;
 
 import Codigos.CodigosRepository;
 import Codigos.RegraDeCodigo;
+import Conexao.Conexao;
 import Exceptions.CodigoInvalidoException;
 import Exceptions.DadosInvalidosException;
 import Exceptions.UsuarioInvalidoException;
 import Usuarios.UsuarioRepository;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class Validacao {
 
@@ -21,7 +23,7 @@ public class Validacao {
             throw new DadosInvalidosException("Nome do usuario invalido! (O nome não pode ser vazio!)");
         }
 
-        if (idade < 0 || idade > 120) {
+        if (idade <= 0 || idade > 120) {
             throw new DadosInvalidosException("Idade do usuario invalida");
         }
 
@@ -34,19 +36,48 @@ public class Validacao {
             throw new CodigoInvalidoException("Seu codigo não existe ou ja foi usado!");
         }
 
-        int usuarioId = usuarioRepository.salvar(nome, idade);
 
-        if (usuarioId == -1) {
-            throw new UsuarioInvalidoException("Erro ao salvar usuario!");
+        // adicionando transacao ao código.
+        Connection connection = Conexao.getIntancia().connection();
+        try {
+
+            connection.setAutoCommit(false);
+
+            int usuarioId = usuarioRepository.salvar(nome, idade);
+
+            if (usuarioId == -1) {
+                throw new UsuarioInvalidoException("Erro ao salvar usuario!");
+            }
+
+            boolean validado = codigosRepository.marcarComoValidado(codigo, usuarioId);
+
+            if (!validado) {
+                throw new CodigoInvalidoException("Erro ao validar codigo!");
+            }
+
+            connection.commit();
+        } catch (RuntimeException e) {
+            desfaz(connection);
+            throw e;
+        } catch (SQLException e) {
+            desfaz(connection);
+            throw new UsuarioInvalidoException("Erro ai cadastrar no banco");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-        boolean validado = codigosRepository.marcarComoValidado(codigo, usuarioId);
+    }
 
-        if (!validado) {
-            throw new CodigoInvalidoException("Erro ao validar codigo!");
+    public void desfaz(Connection connection) {
+        try {
+            connection.rollback();
+        } catch (SQLException e) {
+             e.printStackTrace();
         }
-
-
     }
 
 }
