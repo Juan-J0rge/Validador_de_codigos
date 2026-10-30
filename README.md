@@ -2,7 +2,7 @@
 
 Sistema em Java para controlar a lista de convidados de um casamento usando **códigos de convite**. Cada convidado recebe um código único e só consegue se cadastrar na lista se o código for válido. A lista tem limite de **50 convidados**.
 
-> 🚧 **Projeto em desenvolvimento.** Esta é a versão inicial, que roda apenas no console e ainda não tem interação com o usuário. Veja a seção [Roadmap](#-roadmap) para saber o que está planejado.
+> 🚧 **Projeto em desenvolvimento.** Esta é a versão inicial, que roda apenas no console e ainda não tem interação com o usuário.
 
 ---
 
