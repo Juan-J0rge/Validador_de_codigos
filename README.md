@@ -1,53 +1,56 @@
 # Lista de Convidados
 
-Sistema em Java para controlar a lista de convidados de um casamento usando **códigos de convite**. Cada convidado recebe um código único e só consegue se cadastrar na lista se o código for válido. A lista tem limite de **50 convidados**.
+Um projeto em Java que desenvolvi para simular o controle de convidados de um casamento. A ideia é simples: cada convidado recebe um código único e precisa utilizá-lo para entrar na lista. Para isso, o código deve existir e ainda não ter sido utilizado.
 
-> 🚧 **Projeto em desenvolvimento.** Esta é a versão inicial, que roda apenas no console e ainda não tem interação com o usuário.
+O sistema trabalha com um limite de 50 convidados e utiliza o PostgreSQL para armazenar os códigos de convite.
 
----
-
-## 📋 Funcionalidades (estado atual)
-
-- Geração de 50 códigos únicos e aleatórios no formato `AA-0000` (duas letras maiúsculas, hífen e quatro dígitos).
-- Salvamento dos códigos gerados em um banco PostgreSQL.
-- Proteção contra geração duplicada: se já existirem códigos no banco, a geração não é executada de novo.
-- Consulta no banco para saber se um código existe e ainda não foi utilizado.
-- Validação do formato do código com expressão regular.
-- Regras de cadastro com exceções próprias: código com formato inválido, código inexistente e lista cheia.
+**Projeto em desenvolvimento:** atualmente, o sistema está em sua primeira versão e funciona apenas pelo console, sem interação direta com o usuário.
 
 ---
 
-## 🛠️ Tecnologias
+## Funcionalidades
 
-| Tecnologia | Uso |
+- Geração de 50 códigos aleatórios e únicos no formato `AA-0000`.
+- Armazenamento dos códigos no PostgreSQL.
+- Verificação para evitar a geração duplicada de códigos.
+- Consulta para verificar se um código existe e está disponível.
+- Validação do formato dos códigos utilizando Regex.
+- Regras para impedir cadastros com códigos inválidos ou quando a lista estiver cheia.
+- Exceções personalizadas para tratar situações específicas.
+
+---
+
+## Tecnologias utilizadas
+
+| Tecnologia | Aplicação no projeto |
 |---|---|
-| Java | Linguagem principal |
-| Maven | Gerenciamento de dependências e build |
-| PostgreSQL | Banco de dados |
-| JDBC (driver `postgresql` 42.5.4) | Conexão com o banco |
+| Java | Desenvolvimento da aplicação |
+| Maven | Gerenciamento de dependências |
+| PostgreSQL | Armazenamento dos códigos |
+| JDBC | Comunicação com o banco de dados |
 
 ---
 
-## 📁 Estrutura do projeto
+## Estrutura do projeto
 
-```
+```text
 ListaDeConvidados/
 ├── pom.xml
 └── src/
-    ├── Main.java                      # Testa a conexão e a consulta de um código
-    ├── GerarCodigosNoBanco.java       # Gera os 50 códigos e salva no banco
+    ├── Main.java
+    ├── GerarCodigosNoBanco.java
     ├── Codigos/
-    │   ├── CodigosGerados.java        # Gera os códigos aleatórios (HashSet, sem repetição)
-    │   ├── CodigosRepository.java     # Acesso ao banco (salvar, buscar, contar)
-    │   └── RegraDeCodigo.java         # Regra de formato do código (regex)
+    │   ├── CodigosGerados.java
+    │   ├── CodigosRepository.java
+    │   └── RegraDeCodigo.java
     ├── Conexao/
-    │   └── Conexao.java               # Conexão com o PostgreSQL (Singleton)
+    │   └── Conexao.java
     ├── Usuarios/
-    │   ├── Usuario.java               # Modelo: nome, idade e código
-    │   ├── BancoDeUsuarios.java       # Cadastro de usuários (em memória)
-    │   └── ListaDeUsuarioValidos.java # Lista de convidados confirmados + limite de 50
+    │   ├── Usuario.java
+    │   ├── BancoDeUsuarios.java
+    │   └── ListaDeUsuarioValidos.java
     ├── Validacao/
-    │   └── Validacao.java             # Junta as regras para validar um cadastro
+    │   └── Validacao.java
     └── Exceptions/
         ├── CodigoInvalidoException.java
         └── ListaCheiaException.java
@@ -55,96 +58,110 @@ ListaDeConvidados/
 
 ---
 
-## ⚙️ Como executar
+## Como executar
 
 ### Pré-requisitos
 
-- JDK instalado (o projeto está configurado para Java 21 ou superior)
+- JDK 21 ou superior
 - Maven
-- PostgreSQL rodando localmente
+- PostgreSQL instalado e em execução
 
-### 1. Clonar o repositório
+### 1. Clone o repositório
 
 ```bash
 git clone <URL-DO-SEU-REPOSITORIO>
 cd ListaDeConvidados
 ```
 
-### 2. Criar o banco de dados
-
-Crie um banco chamado `codigos` e a tabela usada pelo projeto. O código espera uma tabela `codigos` com as colunas `codigo` e `validado`. Uma sugestão de criação:
+### 2. Crie o banco de dados
 
 ```sql
 CREATE DATABASE codigos;
 
 CREATE TABLE codigos (
-    codigo   VARCHAR(7) PRIMARY KEY,
+    codigo VARCHAR(7) PRIMARY KEY,
     validado BOOLEAN NOT NULL DEFAULT false
 );
 ```
 
-### 3. Configurar a conexão
+### 3. Configure a conexão
 
-Os dados de conexão estão atualmente em `src/Conexao/Conexao.java`:
+As configurações estão na classe `Conexao.java`, dentro da pasta `Conexao`.
 
-```
-URL:     jdbc:postgresql://localhost:5432/codigos
+Ajuste a URL, o usuário e a senha de acordo com seu PostgreSQL.
+
+```text
+URL: jdbc:postgresql://localhost:5432/codigos
 Usuário: postgres
-Senha:   (defina a sua)
+Senha: sua senha
 ```
 
-Ajuste para os dados do seu PostgreSQL local.
+### 4. Gere os códigos
 
-### 4. Gerar os códigos
+Execute a classe `GerarCodigosNoBanco`. Ela será responsável por gerar os 50 códigos e armazená-los no banco.
 
-Execute a classe `GerarCodigosNoBanco`. Ela cria os 50 códigos e os salva no banco. Se a tabela já tiver códigos, o programa avisa e não gera novamente.
+### 5. Execute a aplicação
 
-### 5. Testar a conexão
-
-Execute a classe `Main`. Ela deve imprimir `Banco Conectado` e depois informar se um código de teste existe e ainda está disponível.
+Execute a classe `Main` para testar a conexão com o banco e verificar a disponibilidade de um código.
 
 ---
 
-## 🔎 Como funciona o código de convite
+## Validação dos convites
 
-- **Formato:** duas letras maiúsculas, hífen e quatro números. Exemplo: `NR-1670`.
-- **Validação:** feita pela regex `^[A-Z]{2}-\d{4}$` na classe `RegraDeCodigo`.
-- **Geração:** feita com `Random` e armazenada em um `HashSet`, o que garante que não haja códigos repetidos.
+Os códigos seguem um padrão definido: duas letras maiúsculas, um hífen e quatro números.
 
-### Fluxo de validação de um cadastro (`Validacao`)
+Exemplo: `NR-1670`
 
-1. O formato do código é válido? Se não, lança `CodigoInvalidoException`.
-2. O código existe? Se não, lança `CodigoInvalidoException`.
-3. A lista ainda tem vaga (menos de 50 convidados)? Se não, lança `ListaCheiaException`.
-4. Se tudo estiver certo, o usuário é cadastrado e entra na lista de convidados válidos.
+Para garantir esse formato, utilizei uma expressão regular:
+
+```java
+^[A-Z]{2}-\\d{4}$
+```
+
+A geração utiliza `Random` e `HashSet`, evitando repetições durante a criação.
+
+### Fluxo de cadastro
+
+A classe `Validacao` reúne as regras necessárias para verificar se um convidado pode entrar na lista:
+
+1. Verifica se o código possui o formato correto.
+2. Confere se o código existe.
+3. Verifica se ainda existem vagas disponíveis.
+4. Se todas as condições forem atendidas, o convidado é adicionado à lista.
+
+Caso alguma regra não seja atendida, uma exceção específica é lançada.
 
 ---
 
-## 🗺️ Roadmap
+## Próximas melhorias
 
-### O que ainda falta na versão atual (v1 – console)
+Ainda tenho algumas melhorias planejadas para o projeto. A ideia é evoluir aos poucos, adicionando funcionalidades e aprimorando a estrutura da aplicação.
 
-- [ ] **Integrar a validação ao banco de dados.** Hoje a classe `Validacao` confere os códigos em uma lista em memória; o correto é consultar a tabela `codigos` (via `CodigosRepository.existeDisponivel`).
-- [ ] **Marcar o código como utilizado** (`validado = true`) depois de um cadastro bem-sucedido, para que o mesmo código não possa ser usado duas vezes.
-- [ ] **Persistir os convidados no banco.** Atualmente `BancoDeUsuarios` e `ListaDeUsuarioValidos` guardam os dados só em memória, que se perdem ao fechar o programa.
-- [ ] **Criar as demais operações do CRUD** (consultar, atualizar e remover convidados).
-- [ ] **Tirar as credenciais do banco do código-fonte** (usar variáveis de ambiente ou arquivo de configuração ignorado pelo Git).
-- [ ] **Deixar a mensagem de "códigos já gerados" mais clara** em `GerarCodigosNoBanco`, já que ela aparece sempre que a tabela tem qualquer código, e não só quando o limite é ultrapassado.
-- [ ] **Adicionar testes automatizados** (por exemplo, com JUnit) para as regras de código e de validação.
+- Integrar a validação diretamente com o banco de dados.
+- Marcar os códigos como utilizados após um cadastro bem-sucedido.
+- Salvar os dados dos convidados no PostgreSQL.
+- Implementar as operações de consulta, atualização e remoção (CRUD).
+- Remover as credenciais do banco do código-fonte.
+- Melhorar as mensagens de retorno da aplicação.
+- Adicionar testes automatizados com JUnit.
 
-### Próximas versões
+### Evolução do projeto
 
-Cada versão será marcada com uma *tag* no Git, para que todas continuem acessíveis.
-
-| Versão | Descrição | Status |
+| Versão | Objetivo | Status |
 |---|---|---|
-| **v1.0 – Console** | Funcionamento básico, sem interação do usuário | 🚧 Em andamento |
-| **v2.0 – Scanner** | Interação via terminal: o usuário digita nome, idade e código | ⏳ Planejada |
-| **v3.0 – Spring Boot + JPA** | API com persistência usando JPA | ⏳ Planejada |
-| **v4.0 – Interface gráfica** | Tela para cadastro e consulta de convidados | ⏳ Planejada |
+| **v1.0 – Console** | Estrutura inicial e regras de validação | Em andamento |
+| **v2.0 – Scanner** | Cadastro interativo pelo terminal | Planejada |
+| **v3.0 – Spring Boot + JPA** | Transformar o projeto em uma API | Planejada |
+| **v4.0 – Interface gráfica** | Criar uma interface para cadastro e consulta | Planejada |
+
+Pretendo manter cada versão registrada por meio de tags no Git, permitindo acompanhar a evolução do projeto.
 
 ---
 
-## 👤 Autor
+## Autor
 
 **Juan Jorge**
+
+Estudante de Ciência da Computação e desenvolvedor com foco em Java e Spring Boot.
+
+[GitHub](https://github.com/Juan-J0rge) • [LinkedIn](https://www.linkedin.com/in/devjuan)
